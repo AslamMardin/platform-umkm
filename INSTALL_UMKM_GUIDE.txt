@@ -1,0 +1,45 @@
+INSTALASI APLIKASI PLATFORM UMKM
+
+1. Instal Aplikasi Pendukung
+- Install Google Chrome
+- Install Node.js
+- Install Composer
+- Install Laragon ke C:\laragon
+- Install Git
+- Install Visual Studio Code (VS Code)
+
+2. Konfigurasi Laragon
+- Masukkan folder PHP ke C:\laragon\bin\php
+- Aktifkan ekstensi PHP: pdo, pdo_mysql, zip, pdo_sqlite (edit php.ini)
+- Masukkan folder phpMyAdmin ke C:\laragon\etc\apps\phpMyAdmin (opsional)
+
+3. Clone Proyek dari GitHub
+git clone https://github.com/AslamMardin/platform-umkm.git
+cd platform-umkm
+
+4. Install Dependency Laravel
+composer install
+
+5. Salin dan Atur File .env
+cp .env.example .env
+php artisan key:generate
+
+Edit file .env:
+DB_DATABASE=platform_umkm
+DB_USERNAME=root
+DB_PASSWORD=
+
+6. Migrasi dan Seeder Database
+php artisan migrate --seed
+
+7. Buat Symlink Storage
+php artisan storage:link
+
+8. Tambahkan File Gambar MOCKUP
+Salin file gambar ke:
+storage/app/public/img/MOCKUP
+
+9. Jalankan Server Laravel
+php artisan serve
+
+Akses aplikasi di http://localhost:8000
