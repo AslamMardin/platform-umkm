@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Desain Kemasan - Fabric.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .main-canvas {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tool-group {
+            margin-bottom: 25px;
+        }
+
+        .tool-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 5px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: #45b7b8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .template-btn {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .template-btn:hover {
+            border-color: #4ecdc4;
+            background: #e8f8f5;
+        }
+
+        .template-btn.active {
+            border-color: #4ecdc4;
+            background: #4ecdc4;
+            color: white;
+        }
+
+        #canvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .properties-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .slider-group {
+            margin: 15px 0;
+        }
+
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .export-options {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+
+            .main-canvas {
+                padding: 10px;
+            }
+        }
+
+        .template-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            /* 2 kolom responsif */
+            gap: 20px;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .template-thumb {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .template-thumb:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>🎨 Tools Desain</h2>
+
+        <!-- Template Selector -->
+        <div class="tool-group">
+            <h3>Pilih Template</h3>
+            <div class="template-gallery">
+                @foreach ($templates as $template)
+                <img src="{{ asset('storage/img/MOCKUP/' . $template->image_path) }}" alt="{{ $template->name }}"
+                    class="template-thumb"
+                    onclick="setAsBackground('{{ asset('storage/img/MOCKUP/' . $template->image_path) }}')">
+                @endforeach
+            </div>
+
+        </div>
+        <!-- Template Selector -->
+        <div class="tool-group">
+            <h3>Pilih Template</h3>
+            <div class="template-selector">
+                <div class="template-btn active" onclick="loadTemplate('box')">
+                    📦 Box Makanan
+                </div>
+                <div class="template-btn" onclick="loadTemplate('label')">
+                    🏷️ Label Stiker
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Elements -->
+        <div class="tool-group">
+            <h3>Tambah Elemen</h3>
+            <div class="input-group">
+                <label for="textInput">Isi Teks:</label>
+                <input type="text" id="textInput" placeholder="Tulis teks di sini">
+            </div>
+            <div class="toolbar">
+                <button class="btn" onclick="addText()">📝 Teks</button>
+                <button class="btn" onclick="addRect()">▢ Kotak</button>
+                <button class="btn" onclick="addCircle()">⭕ Lingkaran</button>
+                <button class="btn" onclick="addTriangle()">🔺 Segitiga</button>
+            </div>
+            <div class="input-group">
+                <label>Upload Gambar/Logo:</label>
+                <input type="file" id="imageUpload" accept="image/*" onchange="addImage(event)">
+                <label>Ganti template:</label>
+                <input type="file" id="bgImageInput" accept="image/*" onchange="setBackground(event)">
+            </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="tool-group">
+            <h3>Warna</h3>
+            <div class="color-palette">
+                <input type="color" class="color-picker" value="#ff6b6b" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#4ecdc4" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#45b7b8" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#f9ca24" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#6c5ce7" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#a29bfe" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#fd79a8" onchange="changeColor(this.value)">
+                <input type="color" class="color-picker" value="#00b894" onchange="changeColor(this.value)">
+            </div>
+        </div>
+
+        <!-- Text Properties -->
+        <div class="tool-group" id="textProperties" style="display: none;">
+            <h3>Properti Teks</h3>
+            <div class="input-group">
+                <label>Font Family:</label>
+                <select id="fontFamily" onchange="changeFontFamily()">
+                    <option value="Arial">Arial</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Pacifico">Pacifico</option>
+                    <option value="Roboto">Roboto</option>
+                </select>
+            </div>
+            <div class="slider-group">
+                <label>Ukuran Font: <span id="fontSizeValue">20</span></label>
+                <input type="range" class="slider" id="fontSize" min="10" max="100" value="20"
+                    onchange="changeFontSize()">
+            </div>
+            <div class="toolbar">
+                <button class="btn" onclick="toggleBold()">𝐁 Bold</button>
+                <button class="btn" onclick="toggleItalic()">𝐼 Italic</button>
+                <button class="btn" onclick="toggleUnderline()">U̲ Underline</button>
+            </div>
+        </div>
+
+        <!-- Object Properties -->
+        <div class="properties-panel">
+            <h4>Properti Objek</h4>
+            <div class="toolbar">
+                <button class="btn btn-secondary" onclick="bringToFront()">↑ Depan</button>
+                <button class="btn btn-secondary" onclick="sendToBack()">↓ Belakang</button>
+                <button class="btn btn-secondary" onclick="deleteSelected()">🗑️ Hapus</button>
+            </div>
+            <div class="slider-group">
+                <label>Opacity: <span id="opacityValue">100</span>%</label>
+                <input type="range" class="slider" id="opacity" min="0" max="100" value="100"
+                    onchange="changeOpacity()">
+            </div>
+        </div>
+    </div>
+
+    <div class="main-canvas">
+        <div class="canvas-container">
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
+    </div>
+
+    <div class="export-options">
+        <button class="btn" onclick="downloadPNG()">📥 Download PNG</button>
+        <button class="btn" onclick="downloadSVG()">📥 Download SVG</button>
+        <button class="btn" onclick="saveProject()">💾 Simpan Project</button>
+    </div>
+
+    <script>
+        // Initialize Fabric.js canvas
+        const canvas = new fabric.Canvas('canvas', {
+            backgroundColor: 'white',
+            selection: true
+        });
+
+        let currentTemplate = 'box';
+
+        // Load template functions
+        function loadTemplate(type) {
+            canvas.clear();
+            currentTemplate = type;
+
+            // Update active template button
+            document.querySelectorAll('.template-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (type === 'box') {
+                loadBoxTemplate();
+            } else if (type === 'label') {
+                loadLabelTemplate();
+            }
+        }
+
+        function setAsBackground(imageUrl) {
+            fabric.Image.fromURL(imageUrl, function (img) {
+                canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                    scaleX: canvas.width / img.width,
+                    scaleY: canvas.height / img.height
+                });
+            });
+        }
+
+
+        function loadBoxTemplate() {
+            // Create box dieline template
+            // const boxOutline = new fabric.Rect({
+            //     left: 50,
+            //     top: 50,
+            //     width: 500,
+            //     height: 300,
+            //     fill: 'transparent',
+            //     stroke: '#333',
+            //     // strokeWidth: 2,
+            //     // strokeDashArray: [5, 5],
+            //     selectable: false
+            // });
+
+            // Add fold lines
+            const foldLine1 = new fabric.Line([200, 50, 200, 350], {
+                stroke: '#666',
+                strokeWidth: 1,
+                strokeDashArray: [3, 3],
+                selectable: false
+            });
+
+            const foldLine2 = new fabric.Line([400, 50, 400, 350], {
+                stroke: '#666',
+                strokeWidth: 1,
+                strokeDashArray: [3, 3],
+                selectable: false
+            });
+
+            canvas.add(boxOutline, foldLine1, foldLine2);
+
+            // Add sample text
+            const sampleText = new fabric.Text('Nama Produk UMKM', {
+                left: 275,
+                top: 150,
+                fontSize: 24,
+                fill: '#333',
+                textAlign: 'center',
+                originX: 'center',
+                originY: 'center'
+            });
+
+            canvas.add(sampleText);
+        }
+
+        function loadLabelTemplate() {
+            // Create circular label template
+            const circle = new fabric.Circle({
+                left: 200,
+                top: 100,
+                radius: 80,
+                fill: 'transparent',
+                stroke: '#333',
+                strokeWidth: 2,
+                strokeDashArray: [5, 5],
+                selectable: false
+            });
+
+            // Create square label template
+            const square = new fabric.Rect({
+                left: 350,
+                top: 120,
+                width: 160,
+                height: 160,
+                fill: 'transparent',
+                stroke: '#333',
+                strokeWidth: 2,
+                strokeDashArray: [5, 5],
+                selectable: false
+            });
+
+            canvas.add(circle, square);
+
+            // Add sample text for labels
+            const circleText = new fabric.Text('Logo\nUMKM', {
+                left: 280,
+                top: 180,
+                fontSize: 16,
+                fill: '#333',
+                textAlign: 'center',
+                originX: 'center',
+                originY: 'center'
+            });
+
+            const squareText = new fabric.Text('Brand\nName', {
+                left: 430,
+                top: 200,
+                fontSize: 16,
+                fill: '#333',
+                textAlign: 'center',
+                originX: 'center',
+                originY: 'center'
+            });
+
+            canvas.add(circleText, squareText);
+        }
+
+        // Add elements functions
+        function addText() {
+            const userText = document.getElementById("textInput").value || "Teks Baru";
+            const text = new fabric.Text(userText, {
+                left: 100,
+                top: 100,
+                fontSize: 20,
+                fill: '#333'
+            });
+            canvas.add(text);
+            canvas.setActiveObject(text);
+            text.enterEditing(); // ← Memasukkan langsung ke mode edit
+            text.selectAll();
+        }
+
+        function addRect() {
+            const rect = new fabric.Rect({
+                left: 100,
+                top: 100,
+                width: 100,
+                height: 60,
+                fill: '#4ecdc4'
+            });
+            canvas.add(rect);
+            canvas.setActiveObject(rect);
+        }
+
+        function addCircle() {
+            const circle = new fabric.Circle({
+                left: 100,
+                top: 100,
+                radius: 50,
+                fill: '#ff6b6b'
+            });
+            canvas.add(circle);
+            canvas.setActiveObject(circle);
+        }
+
+        function addTriangle() {
+            const triangle = new fabric.Triangle({
+                left: 100,
+                top: 100,
+                width: 80,
+                height: 80,
+                fill: '#f9ca24'
+            });
+            canvas.add(triangle);
+            canvas.setActiveObject(triangle);
+        }
+
+        function addImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    fabric.Image.fromURL(e.target.result, function (img) {
+                        img.scale(0.5);
+                        img.set({
+                            left: 100,
+                            top: 100
+                        });
+                        canvas.add(img);
+                        canvas.setActiveObject(img);
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+
+        function setBackground(event) {
+            console.log(event)
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (f) {
+                fabric.Image.fromURL(f.target.result, function (img) {
+                    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                        scaleX: canvas.width / img.width,
+                        scaleY: canvas.height / img.height
+                    });
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+        // Style functions
+        function changeColor(color) {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                if (activeObject.type === 'text') {
+                    activeObject.set('fill', color);
+                } else {
+                    activeObject.set('fill', color);
+                }
+                canvas.renderAll();
+            }
+        }
+
+        function changeFontFamily() {
+            const activeObject = canvas.getActiveObject();
+            const fontFamily = document.getElementById('fontFamily').value;
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.set('fontFamily', fontFamily);
+                canvas.renderAll();
+            }
+        }
+
+        function changeFontSize() {
+            const activeObject = canvas.getActiveObject();
+            const fontSize = document.getElementById('fontSize').value;
+            document.getElementById('fontSizeValue').textContent = fontSize;
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.set('fontSize', parseInt(fontSize));
+                canvas.renderAll();
+            }
+        }
+
+        function toggleBold() {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                const currentWeight = activeObject.fontWeight;
+                activeObject.set('fontWeight', currentWeight === 'bold' ? 'normal' : 'bold');
+                canvas.renderAll();
+            }
+        }
+
+        function toggleItalic() {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                const currentStyle = activeObject.fontStyle;
+                activeObject.set('fontStyle', currentStyle === 'italic' ? 'normal' : 'italic');
+                canvas.renderAll();
+            }
+        }
+
+        function toggleUnderline() {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                const currentUnderline = activeObject.underline;
+                activeObject.set('underline', !currentUnderline);
+                canvas.renderAll();
+            }
+        }
+
+        // Object manipulation functions
+        function bringToFront() {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                canvas.bringToFront(activeObject);
+            }
+        }
+
+        function sendToBack() {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                canvas.sendToBack(activeObject);
+            }
+        }
+
+        function deleteSelected() {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                canvas.remove(activeObject);
+            }
+        }
+
+        function changeOpacity() {
+            const activeObject = canvas.getActiveObject();
+            const opacity = document.getElementById('opacity').value;
+            document.getElementById('opacityValue').textContent = opacity;
+            if (activeObject) {
+                activeObject.set('opacity', opacity / 100);
+                canvas.renderAll();
+            }
+        }
+
+        // Export functions
+        function downloadPNG() {
+            const dataURL = canvas.toDataURL({
+                format: 'png',
+                quality: 1.0
+            });
+            const link = document.createElement('a');
+            link.download = `desain-kemasan-${currentTemplate}.png`;
+            link.href = dataURL;
+            link.click();
+        }
+
+        function downloadSVG() {
+            const svgData = canvas.toSVG();
+            const blob = new Blob([svgData], {
+                type: 'image/svg+xml'
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `desain-kemasan-${currentTemplate}.svg`;
+            link.href = url;
+            link.click();
+        }
+
+        function saveProject() {
+            const projectData = {
+                template: currentTemplate,
+                canvas: JSON.stringify(canvas.toJSON()),
+                timestamp: new Date().toISOString()
+            };
+
+            // Simulate saving to localStorage
+            console.log('Project saved:', projectData);
+            alert('Project berhasil disimpan!');
+        }
+
+        // Event listeners
+        canvas.on('selection:created', function (e) {
+            const activeObject = e.selected[0];
+            if (activeObject && activeObject.type === 'text') {
+                document.getElementById('textProperties').style.display = 'block';
+            } else {
+                document.getElementById('textProperties').style.display = 'none';
+            }
+        });
+
+        canvas.on('selection:cleared', function () {
+            document.getElementById('textProperties').style.display = 'none';
+        });
+
+        // Initialize with box template
+        loadBoxTemplate();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveProject();
+                        break;
+                    case 'z':
+                        e.preventDefault();
+                        // Undo functionality could be added here
+                        break;
+                    case 'Delete':
+                    case 'Backspace':
+                        deleteSelected();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

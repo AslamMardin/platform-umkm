@@ -1,0 +1,41 @@
+# Laravel
+/vendor
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+.env
+.env.backup
+.phpunit.result.cache
+
+# Laravel Sail (Docker)
+docker-compose.override.yml
+
+# Laravel IDE Helper
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
+
+# Laravel Telescope
+storage/telescope
+
+# Laravel Horizon
+storage/horizon
+
+# OS / Editor / Tools
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+*.sublime-workspace
+*.sublime-project
+
+# Log & debug files
+*.log
+npm-debug.log
+yarn-error.log
+*.sqlite
+
+# Homestead
+Homestead.json
+Homestead.yaml
