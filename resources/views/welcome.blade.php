@@ -75,7 +75,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <i class="fas fa-box-open me-2"></i>UMKM PEKKABATA
+                <i class="fas fa-box-open me-2"></i>UMKM UNASMAN
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -214,7 +214,7 @@
     <section class="py-5 gradient-bg text-white">
         <div class="container text-center">
             <h2 class="fw-bold mb-4">Siap Membuat Kemasan yang Menawan?</h2>
-            <p class="lead mb-4">Bergabung di UMKM Pekkabata yang sudah dipercaya</p>
+            <p class="lead mb-4">Bergabung di UMKM UNASMAN yang sudah dipercaya</p>
             <a href="{{ route('login') }}" class="btn btn-light btn-lg px-5">
                 Gabung Sekarang - Gratis!
             </a>

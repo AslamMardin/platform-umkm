@@ -128,7 +128,7 @@
                             <div class="logo-section d-flex flex-column justify-content-center h-100">
                                 <div>
                                     <i class="fas fa-box-open fa-4x mb-3"></i>
-                                    <h1 class="logo-title">Flatform UMKM</h1>
+                                    <h1 class="logo-title">UMKM UNASMAN</h1>
                                     <p class="mb-0">Mulai desain kemasan impian Anda</p>
                                 </div>
                             </div>

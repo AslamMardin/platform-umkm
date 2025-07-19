@@ -22,6 +22,34 @@
             </div>
         </div>
 
+
+
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="price-list" style="text-align: left;">
+                    <div class="price-item">
+                        <span class="amount">5.000</span> / <span class="duration">1 minggu</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="amount">10.000</span> / <span class="duration">2 minggu</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="amount">15.000</span> / <span class="duration">1 bulan</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <img src="{{ asset('storage/img/qr-me.jpeg') }}" class="card-img-top img-fluid" alt="QR Code">
+                <div class="card-body">
+                    <p class="card-text" style="font-size: 9px; color:red">Scan QR code untuk pembelian paket.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 
@@ -66,3 +94,26 @@
 
 
 @endsection
+
+@push('styles')
+    <style>
+        .price-list {
+            font-family: Arial, sans-serif;
+            max-width: 300px;
+        }
+
+        .price-item {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .amount {
+            font-weight: bold;
+            color: #2a9d8f;
+        }
+
+        .duration {
+            color: #555;
+        }
+    </style>
+@endpush

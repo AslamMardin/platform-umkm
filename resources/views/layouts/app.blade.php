@@ -111,7 +111,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <i class="fas fa-box-open me-2"></i>UMKM Pekkabata
+                <i class="fas fa-box-open me-2"></i>UMKM UNASMAN
             </a>
             <div class="d-flex align-items-center gap-3">
                 @include('layouts.topNavbar')
