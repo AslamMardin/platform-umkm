@@ -24,7 +24,7 @@
                     <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                         <li><a class="dropdown-item" href="{{ route('admin.users') }}"><i
                                     class="fas fa-users me-2"></i>Kelola User</a></li>
-                        <li><a class="dropdown-item" href="{{ route('templates.index') }}"><i
+                        <li><a class="dropdown-item" href="{{ route('templates-app.index') }}"><i
                                     class="fas fa-users me-2"></i>Kelola Template</a></li>
                     </ul>
                 </li>

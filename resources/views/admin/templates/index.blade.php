@@ -5,7 +5,7 @@
  @section('content')
      <div class="template-index">
          <h1>Daftar Template</h1>
-         <a href="{{ route('templates.create') }}">+ Tambah Template</a>
+         <a href="{{ route('templates-app.create') }}">+ Tambah Template</a>
          <table>
              <thead>
                  <tr>
@@ -31,8 +31,8 @@
                          <td>{{ ucfirst($t->jenis) }}</td>
                          <td>{{ $t->is_paid ? 'Premium' : 'Gratis' }}</td>
                          <td>
-                             <a href="{{ route('templates.edit', $t->id) }}">Edit</a> |
-                             <form action="{{ route('templates.destroy', $t->id) }}" method="POST" style="display:inline">
+                             <a href="{{ route('templates-app.edit', $t->id) }}">Edit</a> |
+                             <form action="{{ route('templates-app.destroy', $t->id) }}" method="POST" style="display:inline">
                                  @csrf @method('DELETE')
                                  <button onclick="return confirm('Hapus template ini?')">Hapus</button>
                              </form>

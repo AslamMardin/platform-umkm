@@ -10,6 +10,7 @@ class TemplateController extends Controller
 {
     public function index()
     {
+        // dd("asdas");
         $templates = Template::all();
         return view('admin.templates.index', compact('templates'));
     }

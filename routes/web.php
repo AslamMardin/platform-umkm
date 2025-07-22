@@ -28,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
     // admin
     Route::post('/admin/users/{id}/make-premium', [DashboardController::class, 'makePremium'])->name('admin.makePremium');
     Route::post('/admin/users/{id}/make-gratis', [DashboardController::class, 'makeGratis'])->name('admin.makeGratis');
-    Route::resource('templates', TemplateController::class);
+    Route::resource('templates-app', TemplateController::class);
 
 
     Route::get('/profile', [DashboardController::class, 'show'])->name('profile.show');
