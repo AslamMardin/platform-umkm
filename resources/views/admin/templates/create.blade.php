@@ -14,7 +14,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('templates.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('templates-app.store') }}" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
@@ -67,7 +67,7 @@
             </div>
 
             <button type="submit" class="btn btn-success">Simpan Template</button>
-            <a href="{{ route('templates.index') }}" class="btn">Kembali</a>
+            <a href="{{ route('templates-app.index') }}" class="btn">Kembali</a>
         </form>
     </div>
 @endsection

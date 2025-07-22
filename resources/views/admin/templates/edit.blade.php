@@ -14,7 +14,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('templates.update', $template->id) }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('templates-app.update', $template->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -70,7 +70,7 @@
             </div>
 
             <button type="submit" class="btn btn-success">Update Template</button>
-            <a href="{{ route('templates.index') }}" class="btn">Batal</a>
+            <a href="{{ route('templates-app.index') }}" class="btn">Batal</a>
         </form>
     </div>
 @endsection
